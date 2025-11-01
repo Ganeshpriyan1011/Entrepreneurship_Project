@@ -21,14 +21,16 @@ jobs:
           submodules: true
           lfs: false
 
-      # Install dependencies and build the frontend
+      # 🧩 Install dependencies and build the frontend
       - name: Install and build frontend
         run: |
           cd frontend
           npm install
+          # ✅ Inject the environment variable before build
+          echo "VITE_API_BASE_URL=https://secure-azure-backend.azurewebsites.net" >> .env
           npm run build
 
-      # Deploy the frontend build to Azure Static Web Apps
+      # 🚀 Deploy the frontend build to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
