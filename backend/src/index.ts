@@ -8,25 +8,37 @@ import fileRoutes from './routes/files'
 
 const app = express()
 
-const ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
-// Updated CORS configuration to handle Azure Blob Storage requests
+// Allow both local and Azure frontend origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://icy-bay-06d227600.azurestaticapps.net', // ✅ your deployed static site URL
+];
+
 app.use(cors({
-  origin: ORIGIN,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed from this origin'));
+    }
+  },
   credentials: true,
   exposedHeaders: ['x-ms-*']
-}))
-app.use(express.json({ limit: '50mb' }))
-app.use(cookieParser())
+}));
 
-app.use('/api/auth', authRoutes)
-app.use('/api/files', fileRoutes)
+app.use(express.json({ limit: '50mb' }));
+app.use(cookieParser());
 
-app.get('/health', (_req, res) => res.json({ ok: true }))
+app.use('/api/auth', authRoutes);
+app.use('/api/files', fileRoutes);
 
-const PORT = Number(process.env.PORT || 4000)
+app.get('/health', (_req, res) => res.json({ ok: true }));
+
+const PORT = Number(process.env.PORT || 4000);
 initializeTables().then(() => {
-  app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`))
+  app.listen(PORT, () => console.log(`✅ API listening on http://localhost:${PORT}`));
 }).catch((err) => {
-  console.error('Azure Table Storage initialization failed', err)
-  process.exit(1)
-})
+  console.error('❌ Azure Table Storage initialization failed', err);
+  process.exit(1);
+});
