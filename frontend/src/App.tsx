@@ -1,0 +1,66 @@
+import React, { useMemo, useState } from 'react'
+import { Login } from './pages/Login'
+import { Signup } from './pages/Signup'
+import { Dashboard } from './pages/Dashboard'
+import AzureIcon from './components/AzureIcon'
+
+export default function App() {
+  const [view, setView] = useState<'login' | 'signup' | 'dashboard'>(() => {
+    // Check if user has a saved token
+    return localStorage.getItem('authToken') ? 'dashboard' : 'login'
+  })
+  const [token, setToken] = useState<string | null>(() => {
+    // Restore token from localStorage if available
+    return localStorage.getItem('authToken')
+  })
+
+  const api = useMemo(() => ({
+    setAuthed(t: string) {
+      setToken(t)
+      setView('dashboard')
+      // Store token in localStorage for persistence
+      localStorage.setItem('authToken', t)
+    },
+    logout() {
+      setToken(null)
+      setView('login')
+      // Only remove the auth token, keep the encryption key
+      localStorage.removeItem('authToken')
+    },
+    goSignup() { setView('signup') },
+    goLogin() { setView('login') }
+  }), [])
+
+  return (
+    <div className="app-container">
+      <header className="app-header" style={{ borderBottom: view === 'dashboard' ? 'none' : '1px solid var(--border)' }}>
+        <div className="brand">
+          <div className="logo">
+            <AzureIcon size={32} />
+          </div>
+          <h1 className="brand-title">Secure Azure Storage</h1>
+        </div>
+        {view === 'dashboard' && (
+          <div className="nav-actions">
+            <button className="btn btn-outline" onClick={api.logout}>Log out</button>
+          </div>
+        )}
+      </header>
+
+      <main>
+        {view === 'login' && <Login api={api} />}
+        {view === 'signup' && <Signup api={api} />}
+        {view === 'dashboard' && <Dashboard api={api} />}
+      </main>
+
+      {(view === 'login' || view === 'signup') && (
+        <footer className="footer">
+          <p>Secure file storage with client-side encryption</p>
+          <p style={{ margin: '5px 0' }}>
+            Your files are encrypted before upload using AES-GCM encryption
+          </p>
+        </footer>
+      )}
+    </div>
+  )
+}

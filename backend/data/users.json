@@ -1,0 +1,32 @@
+[
+  {
+    "email": "ganeshpriyanmohan@gmail.com",
+    "passwordHash": "$2a$12$wsacr6uK6Gay2nJYNPF8yutyUohymfy7AgCQ4R88iLoezMuhVl5N6",
+    "createdAt": "2025-10-26T13:43:51.326Z",
+    "updatedAt": "2025-10-26T13:43:51.326Z"
+  },
+  {
+    "email": "rohan@gmail.com",
+    "passwordHash": "$2a$12$6Cc4u6UI0/7dgAmuEFn6huFaV82Cn5aEyXPys3ftk81bPNjsShRcq",
+    "createdAt": "2025-11-01T05:18:21.739Z",
+    "updatedAt": "2025-11-01T05:18:21.739Z"
+  },
+  {
+    "email": "saibabashiradi497@gmail.com",
+    "passwordHash": "$2a$12$0/Y9Ya8DR/fvM.wWKPahvOK0eenlb17hGlLl/LtfesviZXRLsxi5O",
+    "createdAt": "2025-11-01T16:18:20.815Z",
+    "updatedAt": "2025-11-01T16:18:20.815Z"
+  },
+  {
+    "email": "vishnupriyan3108@gmail.com",
+    "passwordHash": "$2a$12$BHsXwTJ.YRQhFB.WpwAZueFAPc35oJmcm0El43voobcjsqsmFgQjG",
+    "createdAt": "2025-11-01T16:31:26.159Z",
+    "updatedAt": "2025-11-01T16:31:26.159Z"
+  },
+  {
+    "email": "sihkingpins@gmail.com",
+    "passwordHash": "$2a$12$jK1JA2Ve2y0TnQj7OX50VOTwrQpsNrvtx4KeanbE3yi15mQ1c2xde",
+    "createdAt": "2025-11-01T17:22:08.583Z",
+    "updatedAt": "2025-11-01T17:22:08.583Z"
+  }
+]
