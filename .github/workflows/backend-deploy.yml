@@ -3,7 +3,7 @@ name: Deploy Backend to Azure App Service
 on:
   push:
     branches:
-      - main  # Runs when code is pushed to the main branch
+      - main  # Runs whenever you push to the main branch
 
 jobs:
   build-and-deploy:
@@ -11,7 +11,7 @@ jobs:
     name: Build and Deploy Backend
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout your repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -21,17 +21,19 @@ jobs:
         with:
           node-version: 18
 
-      # 3️⃣ Install dependencies and build the backend
+      # 3️⃣ Install dependencies and build the backend project
       - name: Install and build backend
         run: |
           cd backend
           npm install
           npm run build
 
-      # 4️⃣ ✅ Deploy backend to Azure App Service
+      # 4️⃣ ✅ Deploy the built backend to Azure App Service
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeed  # 👈 Your Azure App Service name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: backend
+          app-name: backendeed                     # 👈 Your exact Azure App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # 👈 Secret added in GitHub
+          package: backend                         # 👈 Path to your backend folder
+        env:
+          SCM_DO_BUILD_DURING_DEPLOYMENT: false     # Prevent Azure from re-building during deploy
