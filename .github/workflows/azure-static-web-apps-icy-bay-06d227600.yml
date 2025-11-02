@@ -1,58 +1,36 @@
-name: Azure Static Web Apps CI/CD
+name: Deploy Backend to Azure App Service
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+      - main  # Deploy backend whenever you push to main
 
 jobs:
-  build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Build and Deploy Frontend
+    name: Build and Deploy Backend
     steps:
-      - name: Checkout repository
+      # 1️⃣ Checkout the repository
+      - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          submodules: true
-          lfs: false
 
-      # 🧩 Install dependencies and build the frontend
-      - name: Install and build frontend
+      # 2️⃣ Set up Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 3️⃣ Install and build the backend
+      - name: Install and build backend
         run: |
-          cd frontend
+          cd backend
           npm install
-          # ✅ Inject the environment variable before build
-          echo "VITE_API_BASE_URL=https://secure-azure-backend.azurewebsites.net" >> .env
           npm run build
 
-      # 🚀 Deploy the frontend build to Azure Static Web Apps
-      - name: Deploy to Azure Static Web Apps
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
+      # 4️⃣ Deploy backend to Azure App Service
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ICY_BAY_06D227600 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-
-          ###### Static Web App Configuration ######
-          app_location: "frontend"        # Your app source code folder
-          output_location: "dist"         # Built folder after `npm run build`
-          api_location: ""                # Leave empty (backend deployed separately)
-          ###### End Configuration ######
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ICY_BAY_06D227600 }}
-          action: "close"
+          app-name: "backendeed"  # ✅ Your actual App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: backend
