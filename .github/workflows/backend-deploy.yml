@@ -11,29 +11,29 @@ jobs:
     name: Build and Deploy Backend
 
     steps:
-      # 1️⃣ Checkout your repository code
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js environment
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3️⃣ Install dependencies and build the backend project
+      # 3️⃣ Install dependencies and build the backend
       - name: Install and build backend
         run: |
           cd backend
           npm install
           npm run build
 
-      # 4️⃣ ✅ Deploy the built backend to Azure App Service
+      # 4️⃣ ✅ Deploy compiled backend to Azure App Service
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeed                     # 👈 Your exact Azure App Service name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # 👈 Secret added in GitHub
-          package: backend                         # 👈 Path to your backend folder
+          app-name: backendeed                     # your Azure App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: backend                         # deploy entire folder (includes dist)
         env:
-          SCM_DO_BUILD_DURING_DEPLOYMENT: false     # Prevent Azure from re-building during deploy
+          SCM_DO_BUILD_DURING_DEPLOYMENT: false     # prevent Azure from rebuilding
