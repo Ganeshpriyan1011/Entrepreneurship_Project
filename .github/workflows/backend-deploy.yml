@@ -32,8 +32,8 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeed                     # your Azure App Service name
+          app-name: backendeed                      # 👈 your Azure App Service name
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: backend                         # deploy entire folder (includes dist)
+          package: backend/dist                     # 👈 deploy the compiled build only
         env:
-          SCM_DO_BUILD_DURING_DEPLOYMENT: false     # prevent Azure from rebuilding
+          SCM_DO_BUILD_DURING_DEPLOYMENT: false      # prevent Azure from trying to re-build
