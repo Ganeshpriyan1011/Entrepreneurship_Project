@@ -11,6 +11,7 @@ const app = express()
 // ✅ Allowed frontend origins
 const allowedOrigins = [
   'http://localhost:5173',
+  'https://icy-bay-06d227600.azurestaticapps.net',
   'https://icy-bay-06d227600.3.azurestaticapps.net'
 ]
 
