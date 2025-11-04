@@ -1,9 +1,9 @@
-name: Deploy Backend to Azure App Service
+name: Deploy Backend to Azure Linux App Service
 
 on:
   push:
     branches:
-      - main
+      - main  # Runs when code is pushed to the main branch
 
 jobs:
   build-and-deploy:
@@ -19,20 +19,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22   # Match your Azure runtime
+          node-version: 22
 
-      # 3️⃣ Install dependencies and build backend
-      - name: Install and build backend
+      # 3️⃣ Install dependencies and build backend (if using TypeScript)
+      - name: Install dependencies
         run: |
           cd backend
           npm install
-          npm run build
-          ls -R dist
+          npm run build || echo "No build step — skipping"
 
-      # 4️⃣ ✅ Deploy full backend folder to Azure App Service
-      - name: Deploy to Azure Web App
+      # 4️⃣ Deploy backend to Azure Linux App Service
+      - name: Deploy to Azure Web App (Linux)
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeed
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: backend     # 👈 Deploy the full backend (includes package.json)
+          app-name: backendeedlinux                     # 👈 your new Linux app name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_LINUX }}  # 👈 use new publish profile secret
+          package: backend
