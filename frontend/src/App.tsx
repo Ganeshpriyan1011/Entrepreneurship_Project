@@ -5,44 +5,54 @@ import { Dashboard } from './pages/Dashboard'
 import AzureIcon from './components/AzureIcon'
 
 export default function App() {
-  const [view, setView] = useState<'login' | 'signup' | 'dashboard'>(() => {
-    // Check if user has a saved token
-    return localStorage.getItem('authToken') ? 'dashboard' : 'login'
-  })
-  const [token, setToken] = useState<string | null>(() => {
-    // Restore token from localStorage if available
-    return localStorage.getItem('authToken')
-  })
+  // ✅ Default view = login page
+  const [view, setView] = useState<'login' | 'signup' | 'dashboard'>('login')
 
+  // ✅ API methods shared between components
   const api = useMemo(() => ({
-    setAuthed(t: string) {
-      setToken(t)
+    // Called after successful login/signup
+    setAuthed() {
       setView('dashboard')
-      // Store token in localStorage for persistence
-      localStorage.setItem('authToken', t)
     },
-    logout() {
-      setToken(null)
+
+    // Logout resets state and clears cookies on backend
+    async logout() {
+      try {
+        // Optional: Call backend logout endpoint if implemented
+        await fetch('https://backendeedlinux.azurewebsites.net/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include', // 🔑 Ensures cookies are sent
+        })
+      } catch (err) {
+        console.warn('Logout API not available, using client-side fallback')
+      }
+
       setView('login')
-      // Only remove the auth token, keep the encryption key
-      localStorage.removeItem('authToken')
     },
+
+    // Navigation helpers
     goSignup() { setView('signup') },
-    goLogin() { setView('login') }
+    goLogin() { setView('login') },
   }), [])
 
   return (
     <div className="app-container">
-      <header className="app-header" style={{ borderBottom: view === 'dashboard' ? 'none' : '1px solid var(--border)' }}>
+      <header
+        className="app-header"
+        style={{ borderBottom: view === 'dashboard' ? 'none' : '1px solid var(--border)' }}
+      >
         <div className="brand">
           <div className="logo">
             <AzureIcon size={32} />
           </div>
           <h1 className="brand-title">Secure Azure Storage</h1>
         </div>
+
         {view === 'dashboard' && (
           <div className="nav-actions">
-            <button className="btn btn-outline" onClick={api.logout}>Log out</button>
+            <button className="btn btn-outline" onClick={api.logout}>
+              Log out
+            </button>
           </div>
         )}
       </header>
