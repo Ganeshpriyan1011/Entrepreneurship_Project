@@ -17,7 +17,7 @@ const allowedOrigins = [
 
 // ✅ Setup CORS middleware globally
 const corsOptions = {
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: any) => {
     if (!origin || allowedOrigins.includes(origin)) {
       console.log(`✅ CORS allowed for origin: ${origin}`)
       callback(null, true)
@@ -33,8 +33,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-// ✅ Handle preflight requests explicitly
 app.options('*', cors(corsOptions))
 
 // ✅ Middleware
@@ -48,14 +46,23 @@ app.use('/api/files', fileRoutes)
 // ✅ Health check
 app.get('/health', (_req, res) => res.json({ ok: true }))
 
+// ✅ TEMP DEBUG: Check environment variable loading
+app.get('/env-check', (req, res) => {
+  res.json({
+    JWT_SECRET: !!process.env.JWT_SECRET,
+    NODE_ENV: process.env.NODE_ENV || null,
+    AZURE_STORAGE_CONNECTION_STRING: !!process.env.AZURE_STORAGE_CONNECTION_STRING,
+    AZURE_STORAGE_CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME || null,
+  });
+});
+
 // ✅ Start server
 const PORT = Number(process.env.PORT || 8080)
-
 initializeTables()
   .then(() => {
-    app.listen(PORT, '0.0.0.0', () =>
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`✅ API listening on port ${PORT}`)
-    )
+    })
   })
   .catch((err) => {
     console.error('❌ Azure Table Storage initialization failed', err)
