@@ -66,30 +66,43 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body || {}
-    if (!email || !password) return res.status(400).json({ error: 'email and password required' })
-    
-    const user = await User.findByEmail(email)
-    if (!user) return res.status(401).json({ error: 'invalid credentials' })
-    
-    const ok = await bcrypt.compare(password, user.passwordHash)
-    if (!ok) return res.status(401).json({ error: 'invalid credentials' })
+    const { email, password } = req.body || {};
+    if (!email || !password)
+      return res.status(400).json({ error: 'email and password required' });
 
-    const secret = process.env.JWT_SECRET
-    if (!secret) return res.status(500).json({ error: 'Server misconfigured' })
-    const token = jwt.sign({}, secret, { subject: user.email, expiresIn: '7d' })
+    const user = await User.findByEmail(email);
+    if (!user)
+      return res.status(401).json({ error: 'invalid credentials' });
 
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok)
+      return res.status(401).json({ error: 'invalid credentials' });
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret)
+      return res.status(500).json({ error: 'Server misconfigured' });
+
+    const token = jwt.sign({}, secret, {
+      subject: user.email,
+      expiresIn: '7d',
+    });
+
+    // ✅ FIXED COOKIE SETTINGS
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 3600 * 1000
-    })
-    return res.json({ ok: true, token })
+      secure: true,       // required for HTTPS in Azure
+      sameSite: 'none',   // allows cross-site cookies
+      path: '/',
+      maxAge: 7 * 24 * 3600 * 1000, // 7 days
+    });
+
+    // Return only ok (not token)
+    return res.json({ ok: true });
   } catch (error: any) {
-    console.error('Login error:', error)
-    return res.status(500).json({ error: error.message || 'Internal server error' })
+    console.error('Login error:', error);
+    return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 })
+
 
 export default router
