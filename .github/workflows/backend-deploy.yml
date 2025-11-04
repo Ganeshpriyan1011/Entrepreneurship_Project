@@ -28,15 +28,10 @@ jobs:
           npm install
           npm run build || echo "No build script found, skipping build"
 
-      # 4️⃣ ✅ Login to Azure using your publish profile secret
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_LINUX }}  # ✅ Must match your GitHub secret name
-
-      # 5️⃣ 🚀 Deploy the backend to your Azure App Service
+      # 4️⃣ 🚀 Deploy the backend directly using publish profile (no azure/login)
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeedlinux             # ✅ Your exact Azure App Service name
-          package: backend                      # ✅ Deploy full backend folder
+          app-name: backendeedlinux               # 👈 Your exact App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_LINUX }}
+          package: backend                        # 👈 Deploys full backend folder
