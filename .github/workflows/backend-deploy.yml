@@ -3,7 +3,7 @@ name: Deploy Backend to Azure Linux App Service
 on:
   push:
     branches:
-      - main  # Runs when you push to the main branch
+      - main  # Runs whenever you push to the main branch
 
 jobs:
   build-and-deploy:
@@ -11,32 +11,32 @@ jobs:
     name: Build and Deploy Backend to Azure Linux App Service
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout your repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
+      # 2️⃣ Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 22  # ✅ Matches your Azure Linux App (Node 22-lts)
 
-      # 3️⃣ Install dependencies and build (if needed)
+      # 3️⃣ Install dependencies and build the backend
       - name: Install and build backend
         run: |
           cd backend
           npm install
-          npm run build || echo "No build step found, skipping build"
+          npm run build || echo "No build script found, skipping build"
 
-      # 4️⃣ Login to Azure using publish profile credentials
-      - name: Login to Azure
+      # 4️⃣ ✅ Login to Azure using your publish profile secret
+      - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_LINUX }}
+          creds: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_LINUX }}  # ✅ Must match your GitHub secret name
 
-      # 5️⃣ Deploy to Azure Linux App Service
-      - name: Deploy to Azure Web App (Linux)
+      # 5️⃣ 🚀 Deploy the backend to your Azure App Service
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: backendeedlinux               # 👈 Your App Service name
-          package: backend                        # 👈 Path to deploy (includes node_modules)
+          app-name: backendeedlinux             # ✅ Your exact Azure App Service name
+          package: backend                      # ✅ Deploy full backend folder
